@@ -64,7 +64,7 @@ class DynamoDBOutput < Fluent::BufferedOutput
   end
 
   def valid_table(table_name)
-    table = @dynamo_db.tables[table_name]
+    @table = table = @dynamo_db.tables[table_name]
     table.load_schema
     @hash_key = table.hash_key
     @range_key = table.range_key unless table.simple_key?
@@ -99,10 +99,8 @@ class DynamoDBOutput < Fluent::BufferedOutput
   end
 
   def write(chunk)
-    table = @dynamo_db.tables[@dynamo_db_table]
-    
     chunk.msgpack_each do |record|
-      table.items.create(record)
+      @table.items.create(record)
     end
   end
 end
